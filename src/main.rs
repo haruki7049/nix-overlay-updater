@@ -1,13 +1,18 @@
-use std::collections::HashMap;
+use clap::Parser;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let owner: &str = "denoland";
-    let repo: &str = "deno";
-    let url: String = format!("https://api.github.com/repos/{}/{}/releases", owner, repo);
+    let args: CLIArgs = CLIArgs::parse();
 
+    let url: String = format!("https://api.github.com/repos/{}/{}/releases", args.owner, args.repo);
     let client = reqwest::Client::new();
     let response = client.get(url);
     println!("{response:#?}");
     Ok(())
+}
+
+#[derive(Parser)]
+struct CLIArgs {
+    owner: String,
+    repo: String,
 }

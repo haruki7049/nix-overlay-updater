@@ -9,7 +9,7 @@ repository = "https://github.com/haruki7049/nix-overlay-updater"
 
 [dependencies]
 clap = { version = "4.5.39", features = ["derive"] }
-reqwest = { version = "0.12.9", features = ["json"] }
+reqwest = { version = "0.12.9", features = ["charset", "h2", "http2", "json", "macos-system-configuration", "rustls-tls"], default-features = false }
 tokio = { version = "1.41.1", features = ["full"] }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

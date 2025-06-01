@@ -9,16 +9,8 @@ repository = "https://github.com/haruki7049/nix-overlay-updater"
 
 [dependencies]
 clap = { version = "4.5.39", features = ["derive"] }
-reqwest = { version = "0.12.9", features = [
-  "charset",
-  "h2",
-  "http2",
-  "json",
-  "macos-system-configuration",
-  "rustls-tls",
-], default-features = false }
+octocrab = { version = "0.44.1", features = ["default-client"] }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
-tokio = { version = "1.41.1", features = ["full"] }
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+tokio = { version = "1.45.1", features = ["full"] }
+url = "2.5.4"

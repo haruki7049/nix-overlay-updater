@@ -1,35 +1,25 @@
 use clap::Parser;
-use reqwest::Client;
-use reqwest::header;
+use url::Url;
 use serde::{Serialize, Deserialize};
-
-static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Set URL & etc
     let args: CLIArgs = CLIArgs::parse();
 
-    let url: String = format!(
-        "https://api.github.com/repos/{}/{}/releases",
-        args.owner, args.repo
-    );
+    // Sending requests
+    let mut page = octocrab::instance()
+        .repos(args.owner, args.repo)
+        .releases()
+        .list()
+        .send()
+        .await?;
 
-    let mut headers = header::HeaderMap::new();
-    headers.insert(
-        "Accept",
-        header::HeaderValue::from_static("application/json"),
-    );
-
-    let client: Client = Client::builder()
-        .default_headers(headers)
-        .user_agent(APP_USER_AGENT)
-        .build()?;
-
-    let body = client.get(url).send().await?.json::<Vec<Release>>().await?;
-    println!("{:?}", body);
-
-    //let body = client.get(url).send().await?.text().await?;
-    //println!("{}", body);
+    for release in page.take_items() {
+        for asset in release.assets {
+            println!("{}", asset.browser_download_url);
+        }
+    }
 
     Ok(())
 }
@@ -44,14 +34,21 @@ struct CLIArgs {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Release {
-    name: String,
-    tag_name: String,
-    assets: Vec<Asset>,
-}
+struct JsonOutput(Vec<Release>);
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Asset {
-    name: String,
-    browser_download_url: String,
+struct Release {
+    version: String,
+    url: Url,
+    arch: Arch,
+    sha256: String,
+}
+
+#[allow(non_camel_case_types)]
+#[derive(Debug, Serialize, Deserialize)]
+enum Arch {
+    x86_64_linux,
+    aarch64_linux,
+    x86_64_darwin,
+    aarch64_darwin,
 }

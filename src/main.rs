@@ -1,6 +1,6 @@
 use clap::Parser;
+use serde::{Deserialize, Serialize};
 use url::Url;
-use serde::{Serialize, Deserialize};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
